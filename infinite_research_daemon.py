@@ -10,6 +10,7 @@ import argparse
 from datetime import datetime, timedelta
 import db_manager
 import traceback
+from agi_core.self_recourse_brain import SelfRecourseBrain
 
 # Reconfigure standard output encoding to prevent Windows CP1252/UnicodeEncodeError
 if hasattr(sys.stdout, 'reconfigure'):
@@ -191,7 +192,7 @@ def trigger_sync(is_shutdown=False):
                 pass
 
 # --- ArXiv Ingestion Logic ---
-def fetch_arxiv_papers(category, query_data, state_entry, batch_size=20):
+def fetch_arxiv_papers(brain, category, query_data, state_entry, batch_size=20):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] Daemon: Fetching ArXiv '{category}'...")
     
     query = query_data["query"]
@@ -291,6 +292,10 @@ sources: ["{link}"]
                 EXISTING_RESEARCH_TITLES.add(safe_title.lower())
                 if success:
                     processed += 1
+                    if brain:
+                        brain.assimilate_information(category, safe_title)
+                        if brain.epistemic_distress > 0.70:
+                            brain.execute_self_recourse(root_cause_variable=category)
                 page_processed += 1
                 
             print(f"    -> Page {page+1}: processed {page_processed} entries.")
@@ -361,7 +366,7 @@ def fetch_github_repos(category, base_query, page, last_run_date):
         db_manager.log_system_error(f"GitHubCrawler_{category}", err_msg, traceback.format_exc())
         return [], 500
 
-def process_github_repos(repos, cat_name):
+def process_github_repos(brain, repos, cat_name):
     processed = 0
     for repo in repos:
         name = repo.get("name", "Unknown")
@@ -419,6 +424,10 @@ sources: ["{url}"]
         EXISTING_RESEARCH_TITLES.add(safe_title.lower())
         if success:
             processed += 1
+            if brain:
+                brain.assimilate_information(cat_name, safe_title)
+                if brain.epistemic_distress > 0.70:
+                    brain.execute_self_recourse(root_cause_variable=cat_name)
             
     return processed
 
@@ -700,6 +709,10 @@ def main():
     print("[!] Graceful Shutdown Configured: Press Ctrl+C to auto-sync and exit cleanly.")
     print("=======================================================================\n")
     
+    # Initialize the Homeostatic Brain
+    brain = SelfRecourseBrain()
+    print("[*] Homeostatic Meta-Cognitive Engine Initialized. Ready to process vector streams.")
+    
     global EXISTING_RESEARCH_TITLES
     EXISTING_RESEARCH_TITLES = load_existing_research_titles()
     print(f"[*] Loaded {len(EXISTING_RESEARCH_TITLES)} existing research titles from vault for deduplication.")
@@ -736,7 +749,7 @@ def main():
             cat_data = ARXIV_CATEGORIES[cat_name]
             state_entry = arxiv_state.get(cat_name, {"latest_seen_id": "", "last_run": ""})
             
-            ingested = fetch_arxiv_papers(cat_name, cat_data, state_entry, batch_size=20)
+            ingested = fetch_arxiv_papers(brain, cat_name, cat_data, state_entry, batch_size=20)
             if ingested:
                 new_data_ingested = True
             
@@ -772,7 +785,7 @@ def main():
                 continue
                 
             if repos and isinstance(repos, list):
-                count = process_github_repos(repos, gh_cat_name)
+                count = process_github_repos(brain, repos, gh_cat_name)
                 print(f"    -> Successfully processed {count} GitHub repositories.")
                 if count > 0:
                     new_data_ingested = True
