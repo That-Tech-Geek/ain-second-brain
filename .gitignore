@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Local environment
+.env
+*.env
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ──────────────────────────────────────────────────────────────────
+# LOCAL-DEVICE ONLY — never push these to the repo
+# *.retired = files Sambit retired on his own device (21k+ paper saturation)
+# Other deployments will not have saturation and should keep the research pipeline.
+# ──────────────────────────────────────────────────────────────────
+*.retired
+
+# Local runtime state
+daemon_state.json
+github_daemon_state.json
+compile_cache.json
+vault/ain_system.db
+
+# Vault contents and generated artifacts are local-only
+vault/
+agi_core/synthesized_tools/
