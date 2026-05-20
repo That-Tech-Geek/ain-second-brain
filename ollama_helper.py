@@ -59,10 +59,10 @@ def reset_availability_cache():
     _available = None
 
 
-def _call(model: str, prompt: str, system: str = "") -> str | None:
+def _call(model: str, prompt: str, system: str = "", max_tokens: int = MAX_TOKENS) -> str | None:
     """
     Internal low-level call. Returns text or None on any failure.
-    Enforces MAX_TOKENS hard ceiling.
+    Enforces token ceiling via max_tokens.
     """
     if not is_available():
         return None
@@ -75,7 +75,7 @@ def _call(model: str, prompt: str, system: str = "") -> str | None:
         response = client.chat(
             model=model,
             messages=messages,
-            options={"num_predict": MAX_TOKENS, "temperature": 0.2}
+            options={"num_predict": max_tokens, "temperature": 0.2}
         )
         return response.message.content.strip()
     except Exception as e:
@@ -111,6 +111,18 @@ def suggest_resolution_experiment(title_a: str, title_b: str, excerpt_a: str, ex
     )
     return _call(EXTRACT_MODEL, prompt)
 
+def extract_logic_relation(text: str) -> str | None:
+    """
+    Given a natural language relation, map it to a strict Z3 logic predicate.
+    Valid outputs: IMPLIES, PREVENTS, REQUIRES, XOR.
+    """
+    prompt = (
+        f"Map the following relation to exactly one of these strict logical predicates: IMPLIES, PREVENTS, REQUIRES, XOR.\n"
+        f"Relation text: '{text}'\n"
+        f"Output ONLY the predicate word. No preamble."
+    )
+    return _call(EXTRACT_MODEL, prompt)
+
 
 def generate_backtest_stub(claim: str) -> str | None:
     """
@@ -128,6 +140,22 @@ def generate_backtest_stub(claim: str) -> str | None:
         f"Include docstring, args (df: pd.DataFrame), return bool result."
     )
     return _call(CODE_MODEL, prompt, system=system)
+
+def generate_tool_code(task: str, error_msg: str = "") -> str | None:
+    """
+    Generate a standalone Python script to accomplish a specific task.
+    Includes an error feedback loop for recursive debugging.
+    Token cost: ~400 per call.
+    """
+    system = (
+        "You are an autonomous Python tool-writing agent. Output ONLY valid Python code. "
+        "No markdown fences, no explanations. The script MUST run independently and print either 'True' or 'False' to standard output as its final result."
+    )
+    prompt = f"Write a complete Python script to perform this task:\n'{task}'\n"
+    if error_msg:
+        prompt += f"\nYour previous attempt failed with this exact error trace:\n{error_msg}\n\nRewrite the script to fix this error."
+        
+    return _call(CODE_MODEL, prompt, system=system, max_tokens=400)
 
 
 def suggest_replacement_features(failed_features: list[str]) -> str | None:

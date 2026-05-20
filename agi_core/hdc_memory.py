@@ -10,7 +10,7 @@ class HDCMemory:
     def __init__(self, dim=10000):
         self.dim = dim
         self.item_memory = {} # Item string to bipolar vector mapping
-        self.global_state = np.zeros(dim, dtype=np.int32)
+        self.global_state = np.zeros(dim, dtype=np.float32)
         
     def _generate_random_vector(self):
         """Generates a bipolar vector (-1, 1)"""
@@ -25,10 +25,9 @@ class HDCMemory:
     def bundle(self, vectors: list[np.ndarray]) -> np.ndarray:
         """
         Bundling (Addition) allows multiple concepts to coexist in a single vector.
-        This is how we "instantly" add new markdown files to the global memory.
+        This simply sums the vectors in continuous space.
         """
-        bundled = np.sum(vectors, axis=0)
-        return np.where(bundled >= 0, 1, -1)
+        return np.sum(vectors, axis=0)
         
     def bind(self, v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
         """
@@ -37,15 +36,15 @@ class HDCMemory:
         """
         return v1 * v2
         
-    def update_memory(self, concepts: list[str]):
+    def update_memory(self, concepts: list[str], decay_factor: float = 0.95):
         """
         Simulates writing a new markdown file.
-        Updates the global neural state instantly with zero tokens and zero power.
+        Updates the global neural state with continuous synaptic decay.
         """
         vecs = [self.encode(c) for c in concepts]
         doc_vector = self.bundle(vecs)
-        # Update global state via bundling
-        self.global_state = self.bundle([self.global_state, doc_vector])
+        # Apply synaptic decay to older memories and add the new document
+        self.global_state = (self.global_state * decay_factor) + doc_vector
         
     def query_similarity(self, concept: str) -> float:
         """
@@ -55,8 +54,10 @@ class HDCMemory:
         if concept not in self.item_memory:
             return 0.0
         vec = self.item_memory[concept]
+        # Collapse the continuous probability cloud to bipolar for the query
+        bipolar_state = np.where(self.global_state >= 0, 1, -1)
         # Dot product divided by dimensions gives similarity [-1, 1]
-        sim = np.dot(vec, self.global_state) / self.dim
+        sim = np.dot(vec, bipolar_state) / self.dim
         return float(sim)
 
     def detect_bound_clusters(self, threshold=0.10) -> list:
@@ -80,7 +81,8 @@ class HDCMemory:
                 v2 = self.item_memory[c2]
                 bound_vec = self.bind(v1, v2)
                 
-                sim = float(np.dot(bound_vec, self.global_state) / self.dim)
+                bipolar_state = np.where(self.global_state >= 0, 1, -1)
+                sim = float(np.dot(bound_vec, bipolar_state) / self.dim)
                 
                 if sim > threshold:
                     discovered_axioms.append((c1, c2, sim))

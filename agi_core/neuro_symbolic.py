@@ -1,4 +1,13 @@
+import os
+import sys
 import z3
+
+# Import ollama_helper
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+try:
+    import ollama_helper
+except ImportError:
+    ollama_helper = None
 
 class NeuroSymbolicEngine:
     def __init__(self):
@@ -14,33 +23,45 @@ class NeuroSymbolicEngine:
     def add_rule(self, subj, relation, obj):
         """
         Translates a natural language relation into Z3 symbolic logic.
-        Currently supports basic causal rules.
+        Uses an LLM to accurately extract the formal predicate.
         """
         s_var = self._get_var(subj)
         o_var = self._get_var(obj)
         
-        relation = relation.lower().strip()
-        
-        # Mapping NLP relations to strict Formal Logic
-        if "cause" in relation or "leads to" in relation or "implies" in relation:
-            # A implies B
-            self.solver.add(z3.Implies(s_var, o_var))
-            print(f"[NeuroSymbolic] Added rule: {subj} => {obj}")
+        extracted_pred = None
+        if ollama_helper:
+            extracted_pred = ollama_helper.extract_logic_relation(relation)
             
-        elif "prevent" in relation or "blocks" in relation or "inhibits" in relation:
-            # A implies NOT B
+        if extracted_pred:
+            extracted_pred = extracted_pred.strip().upper()
+        else:
+            # Deterministic fallback if offline
+            relation_lower = relation.lower().strip()
+            if "cause" in relation_lower or "leads to" in relation_lower or "implies" in relation_lower:
+                extracted_pred = "IMPLIES"
+            elif "prevent" in relation_lower or "blocks" in relation_lower or "inhibits" in relation_lower:
+                extracted_pred = "PREVENTS"
+            elif "requires" in relation_lower:
+                extracted_pred = "REQUIRES"
+            elif "mutually exclusive" in relation_lower or "contradicts" in relation_lower:
+                extracted_pred = "XOR"
+            else:
+                extracted_pred = "IMPLIES"
+                
+        # Apply the predicate to Z3
+        if "IMPLIES" in extracted_pred or "REQUIRES" in extracted_pred:
+            self.solver.add(z3.Implies(s_var, o_var))
+            print(f"[NeuroSymbolic] Mapped '{relation}' -> IMPLIES: {subj} => {obj}")
+        elif "PREVENTS" in extracted_pred:
             self.solver.add(z3.Implies(s_var, z3.Not(o_var)))
-            print(f"[NeuroSymbolic] Added rule: {subj} => NOT {obj}")
-            
-        elif "requires" in relation:
-            # A requires B (if A is true, B must be true) -> A implies B
-            self.solver.add(z3.Implies(s_var, o_var))
-            print(f"[NeuroSymbolic] Added rule: {subj} requires {obj}")
-            
-        elif "mutually exclusive" in relation or "contradicts" in relation:
-            # A implies NOT B AND B implies NOT A
+            print(f"[NeuroSymbolic] Mapped '{relation}' -> PREVENTS: {subj} => NOT {obj}")
+        elif "XOR" in extracted_pred:
             self.solver.add(z3.Or(z3.Not(s_var), z3.Not(o_var)))
-            print(f"[NeuroSymbolic] Added rule: {subj} XOR {obj}")
+            print(f"[NeuroSymbolic] Mapped '{relation}' -> XOR: {subj} XOR {obj}")
+        else:
+            # Default fallback mapping
+            self.solver.add(z3.Implies(s_var, o_var))
+            print(f"[NeuroSymbolic] Unknown LLM Output '{extracted_pred}'. Defaulting to IMPLIES: {subj} => {obj}")
             
     def check_consistency(self, hypothesis_subj=None, hypothesis_obj=None):
         """

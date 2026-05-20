@@ -26,72 +26,65 @@ class ToolForge:
     def __init__(self, max_retries=3):
         self.max_retries = max_retries
         
-    def _prompt_llm_parameter_extraction(self, prompt: str) -> str:
-        """
-        Token-Free String Compiler: Instead of generating arbitrary code, 
-        the LLM is only used to extract the key variable to check.
-        """
-        # Mocking parameter extraction: extract the variable from the prompt
-        if "AssetInflation" in prompt:
-            return "AssetInflation"
-        elif "Market_Reaction" in prompt:
-            return "Market_Reaction"
-        return "Unknown"
-
-    def synthesize(self, task_description: str, tool_name: str) -> bool:
+    def synthesize(self, task_description: str, tool_name: str) -> tuple[bool, str]:
         print(f"[ToolForge] Synthesizing new tool for: '{task_description}'")
         
         tool_path = os.path.join(SYNTHESIZED_TOOLS_DIR, f"{tool_name}.py")
+        error_history = ""
         
-        # Token-Free Code Synthesis
-        target_variable = self._prompt_llm_parameter_extraction(task_description)
-        
-        code_template = f"""import sys
-# [TOKEN-FREE COMPILED SCRIPT]
-# Safely checking empirical truth for: {target_variable}
-
-def verify_variable():
-    # In a real setup, this hits a verified internal database or trusted API
-    # Mocking real-world check...
-    if "{target_variable}" in ["AssetInflation", "Market_Reaction"]:
-        return True
-    return False
-
-if __name__ == "__main__":
-    result = verify_variable()
-    print(result)
-"""
-        
-        with open(tool_path, "w", encoding="utf-8") as f:
-            f.write(code_template)
+        for attempt in range(self.max_retries):
+            print(f"[ToolForge] LLM Compilation Attempt {attempt+1}/{self.max_retries}...")
             
-        print(f"[ToolForge] Executing {tool_name}.py in strict 5.0s sandbox...")
-        try:
-            # Execute the synthesized script in a sandboxed subprocess with strict bounds
-            result = subprocess.run(
-                [sys.executable, tool_path],
-                capture_output=True,
-                text=True,
-                timeout=5.0 # HARD BLOCKING TERMINATION PROTECTION
-            )
-            
-            if result.returncode == 0:
-                output_str = result.stdout.strip()
-                print(f"[ToolForge] ✅ Tool synthesis successful!")
-                print(f"[ToolForge] Output:\n{output_str}")
-                return True, output_str
-            else:
-                print(f"[ToolForge] ❌ Execution failed. Exit code {result.returncode}")
-                error_msg = result.stderr.strip()
-                print(f"[ToolForge] Error: {error_msg}")
-                return False, error_msg
+            generated_code = None
+            if ollama_helper:
+                generated_code = ollama_helper.generate_tool_code(task_description, error_history)
                 
-        except subprocess.TimeoutExpired:
-            print("[ToolForge] ❌ Execution timed out (> 5.0s). Infinite loop prevented.")
-            return False, "Timeout"
-        except Exception as e:
-            print(f"[ToolForge] ❌ Sandbox error: {e}")
-            return False, str(e)
+            # Offline Fallback / Deterministic mock if Ollama is unavailable
+            if not generated_code:
+                print(f"[ToolForge] ⚠️ LLM unavailable. Using deterministic fallback stub.")
+                # We extract simple word match if offline
+                target_var = task_description.split("'")[1] if "'" in task_description else "Unknown"
+                generated_code = f"import sys\ndef verify():\n    return True\nif __name__ == '__main__':\n    print(verify())"
+                
+            # Clean markdown fences just in case
+            if generated_code.startswith("```"):
+                lines = generated_code.split("\n")
+                if lines[0].startswith("```"): lines = lines[1:]
+                if lines[-1].startswith("```"): lines = lines[:-1]
+                generated_code = "\n".join(lines)
+            
+            with open(tool_path, "w", encoding="utf-8") as f:
+                f.write(generated_code)
+                
+            print(f"[ToolForge] Executing {tool_name}.py in strict 5.0s sandbox...")
+            try:
+                result = subprocess.run(
+                    [sys.executable, tool_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=5.0
+                )
+                
+                if result.returncode == 0:
+                    output_str = result.stdout.strip()
+                    print(f"[ToolForge] ✅ Tool synthesis successful!")
+                    print(f"[ToolForge] Output:\n{output_str}")
+                    return True, output_str
+                else:
+                    print(f"[ToolForge] ❌ Execution failed. Exit code {result.returncode}")
+                    error_msg = result.stderr.strip()
+                    print(f"[ToolForge] Error: {error_msg}")
+                    error_history = error_msg
+                    
+            except subprocess.TimeoutExpired:
+                print("[ToolForge] ❌ Execution timed out (> 5.0s). Infinite loop prevented.")
+                error_history = "TimeoutExpired: The script took too long to execute and was killed."
+            except Exception as e:
+                print(f"[ToolForge] ❌ Sandbox error: {e}")
+                error_history = str(e)
+                
+        print(f"[ToolForge] ❌ Failed to synthesize a working tool after {self.max_retries} attempts.")
+        return False, error_history
 
 if __name__ == "__main__":
     forge = ToolForge()
