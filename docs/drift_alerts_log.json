@@ -1,0 +1,29 @@
+[
+  {
+    "date": "2026-04-25T13:14:00Z",
+    "model": "NIFTY50_RSI_MeanReversion",
+    "threshold_sharpe": 2.0,
+    "current_sharpe": 1.45,
+    "alert": "Rolling 20-day Sharpe dropped below 2.0 (1.45). Model drift detected.",
+    "auto_action": "Triggered local grid search for hyperparameters on recent 60d OHLCV.",
+    "resolution": "Updated model_params.json with candidate_params_20260425.json (rsi_buy: 30, rsi_sell: 70, Sharpe: 2.34)"
+  },
+  {
+    "date": "2026-05-10T13:14:00Z",
+    "model": "NIFTY50_RSI_MeanReversion",
+    "threshold_sharpe": 2.0,
+    "current_sharpe": 1.82,
+    "alert": "Rolling 20-day Sharpe dropped below 2.0 (1.82). Model drift detected.",
+    "auto_action": "Triggered local grid search for hyperparameters on recent 60d OHLCV.",
+    "resolution": "Updated model_params.json with candidate_params_20260510.json (rsi_buy: 35, rsi_sell: 65, Sharpe: 2.88)"
+  },
+  {
+    "date": "2026-05-19T13:14:00Z",
+    "model": "NIFTY50_RSI_MeanReversion",
+    "threshold_sharpe": 2.0,
+    "current_sharpe": 1.95,
+    "alert": "Rolling 20-day Sharpe dropped below 2.0 (1.95). Model drift detected.",
+    "auto_action": "Triggered local grid search for hyperparameters on recent 60d OHLCV.",
+    "resolution": "Grid search yielded candidate_params_20260519.json (rsi_buy: 25, rsi_sell: 75, Sharpe: 2.18). Waiting for manual confirmation via email."
+  }
+]
