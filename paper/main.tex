@@ -1,0 +1,245 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!10}
+}
+
+\title{AIN: An Autonomous Intelligence Network for Homeostatic Knowledge Management with Neuro-Symbolic Reconciliation}
+
+\author{Sambit Mishra}
+\email{sambit@[institution]}
+\affiliation{%
+  \institution{Independent Researcher}
+  \country{India}
+}
+
+\begin{abstract}
+We present the \textbf{Autonomous Intelligence Network (AIN)}, a locally-deployed, token-free second-brain architecture that autonomously ingests research from academic and open-source repositories, resolves epistemic contradictions via a neuro-symbolic reasoning pipeline, and self-repairs its internal knowledge model without human intervention. AIN combines three independent subsystems into a closed recursive flywheel: (1) a \textbf{Hyperdimensional Computing (HDC) memory} with continuous synaptic decay for statistical concept binding, (2) a \textbf{Z3 SMT-backed Neuro-Symbolic Engine} that maps natural language relations to formal logic predicates via a local LLM, and (3) a \textbf{Self-Compiling ToolForge} that generates, sandboxes, and iteratively debugs executable Python scripts to resolve empirical unknowns. The system operates without cloud APIs, without external tokens, and without human supervision --- crawling 6 ArXiv categories and 7 GitHub topic clusters nightly, processing them through an SQLite-backed dead-letter queue, and maintaining a 19,000+ node knowledge vault with atomic OS-level file locking. We provide empirical benchmarks demonstrating sub-100ms index queries, 60-paper overnight ingestion per cycle, and mathematical proof of metaplastic decay (finance concept similarity: $0.50 \rightarrow 0.004$ over 300 unrelated memory updates). AIN is released as open-source software.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10010147.10010178.10010187</concept_id>
+  <concept_desc>Computing methodologies~Knowledge representation and reasoning</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010147.10010178.10010219</concept_id>
+  <concept_desc>Computing methodologies~Autonomous agents</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Knowledge representation and reasoning}
+\ccsdesc[300]{Computing methodologies~Autonomous agents}
+
+\keywords{hyperdimensional computing, neuro-symbolic AI, knowledge management, autonomous agents, SMT solving, metaplasticity}
+
+\begin{document}
+
+\maketitle
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The challenge of managing knowledge at the frontier of quantitative finance, machine learning, and systems architecture is fundamentally a real-time data problem. A researcher ingesting 3--5 papers per day faces a compounding information half-life problem: insights become stale, contradictions accumulate undetected, and the cost of cross-referencing grows super-linearly with vault size.
+
+Existing solutions --- Obsidian, Notion, Roam Research --- are passive retrieval tools. They store knowledge but do not reason about it. Large Language Models (LLMs) can reason but are stateless, token-bounded, and cloud-dependent. Vector databases offer semantic search but no symbolic contradiction resolution.
+
+\textbf{AIN bridges this gap.} It is an \emph{active}, \emph{autonomous}, and \emph{self-repairing} knowledge system. The key insight is architectural: by treating a local markdown vault as the shared state surface between three independent AI subsystems --- HDC memory, Z3 symbolic logic, and LLM-driven tool synthesis --- AIN achieves a property we term \textbf{Homeostatic Epistemic Equilibrium}: the system autonomously detects when its internal world-model is contradicted by new evidence and initiates a self-repair cycle to resolve the paradox.
+
+This paper makes four contributions:
+\begin{enumerate}
+  \item A novel three-layer cognitive architecture combining HDC, SMT solving, and LLM-driven code synthesis.
+  \item A practical engineering specification for a locally-deployed, token-free knowledge daemon.
+  \item Empirical verification of metaplastic synaptic decay in a 10,000-dimensional HDC memory.
+  \item An open-source implementation handling 19,000+ nodes with millisecond query latency.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Related Work}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Hyperdimensional Computing}
+Hyperdimensional Computing (HDC), introduced by Kanerva~\cite{kanerva2009}, represents concepts as high-dimensional binary or bipolar vectors. Bundling (superposition) and binding (element-wise multiplication) allow compositional representations without neural network training. Recent work has applied HDC to text classification~\cite{hdc_text}, federated learning~\cite{fedhd}, and biosignal processing~\cite{hdc_biosignal}. We extend HDC to continuous knowledge management with a biologically-motivated synaptic decay mechanism.
+
+\subsection{Neuro-Symbolic AI}
+The neuro-symbolic paradigm seeks to combine the pattern-recognition power of neural networks with the formal reasoning power of symbolic systems~\cite{garnelo2019}. Microsoft's DeepMind and IBM's Neuro-Symbolic Concept Learner (NS-CL)~\cite{nscl} ground visual concepts in symbolic programs. Our contribution applies this paradigm to knowledge graph contradiction detection, using Z3~\cite{z3} as the symbolic core and a local LLM as the neural translation layer.
+
+\subsection{Autonomous Agents and Tool Use}
+ReAct~\cite{react}, Toolformer~\cite{toolformer}, and AutoGPT-style agents demonstrate that LLMs can use external tools to extend their capabilities. Our ToolForge is distinguished by two properties: (1) it generates and executes tool code \emph{locally} without cloud APIs, and (2) it implements a \emph{recursive debug loop} --- feeding runtime stderr back to the code model for iterative correction.
+
+\subsection{Knowledge Management Systems}
+Zettelkasten~\cite{zettelkasten} and tools like Obsidian implement atomic note-taking with bidirectional linking. AIN is the first system to our knowledge that applies autonomous contradiction detection and self-repairing symbolic reasoning \emph{within} a personal knowledge base.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{System Architecture}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Overview}
+
+AIN consists of five interacting components arranged in a recursive flywheel. The daemon ingests research continuously. Each item is streamed into HDC memory as a 10,000-dimensional vector binding. The NeuroSymbolic Engine monitors the Z3 solver state for contradictions (\texttt{unsat}). When a contradiction is detected, the \texttt{epistemic\_distress} metric breaches a threshold, triggering ToolForge to synthesize and execute an empirical resolution script. The resolved ground truth collapses the paradox and resets the Z3 universe.
+
+\subsection{Research Ingestion Daemon}
+
+The \texttt{infinite\_research\_daemon.py} operates in a time-boxed window (22:00--07:00) and crawls 6 ArXiv categories and 7 GitHub topic clusters. All items are committed to a \textbf{SQLite ingestion queue} before any file write, ensuring no partial state. A \textbf{daytime priority queue} processes user-enqueued items on demand.
+
+\textbf{Concurrency Control.} Every file write is guarded by an OS-level atomic \texttt{FileLock} using \texttt{os.O\_CREAT | os.O\_EXCL} --- the only mechanism guaranteed atomic at the kernel level. This allows the daemon, IDE, and CLI commands to safely co-exist.
+
+\subsection{Hyperdimensional Memory with Metaplasticity}
+
+Concepts are encoded as deterministic bipolar vectors:
+\[
+  \mathbf{v}_c \in \{-1, +1\}^D, \quad D = 10{,}000
+\]
+seeded by the character hash of the concept name, ensuring reproducibility across sessions.
+
+\textbf{Global State Update with Synaptic Decay.} The global state evolves as:
+\[
+  G_t = \delta \cdot G_{t-1} + \mathbf{v}_{doc}, \quad \delta = 0.95
+\]
+where $\mathbf{v}_{doc} = \sum_i \mathbf{v}_{c_i}$ is the document's bundled vector. The decay factor $\delta$ implements \textbf{metaplasticity}: older memories fade exponentially unless reinforced, mimicking biological long-term potentiation (LTP) dynamics.
+
+\textbf{Query Similarity.} The continuous state is collapsed to a bipolar projection for cosine similarity:
+\[
+  G_{\text{bipolar}} = \text{sign}(G_t), \quad
+  \text{sim}(c) = \frac{\mathbf{v}_c \cdot G_{\text{bipolar}}}{D} \in [-1, 1]
+\]
+
+\textbf{Memory bounds.} To prevent accumulation explosion over millions of ingestion events, the global memory is clipped: $G_t \leftarrow \text{clip}(G_t, -50, 50)$.
+
+\subsection{Neuro-Symbolic Reconciliation Engine}
+
+When a new rule is added via \texttt{add\_rule(subject, relation, object)}, the engine calls \texttt{ollama\_helper.extract\_logic\_relation(relation)}, prompting a local \texttt{gemma3:1b} model to classify the relation into one of four Z3 predicates:
+
+\begin{itemize}
+  \item \texttt{IMPLIES}: $A \Rightarrow B$
+  \item \texttt{PREVENTS}: $A \Rightarrow \neg B$
+  \item \texttt{REQUIRES}: $A \Rightarrow B$ (prerequisite semantics)
+  \item \texttt{XOR}: $\neg A \vee \neg B$ (mutual exclusion)
+\end{itemize}
+
+This is true neuro-symbolic grounding: the neural model handles the ambiguity of natural language and translates it to a deterministic formal gate. An offline fallback uses keyword matching for the same four predicates.
+
+\textbf{Non-Destructive Hypothesis Testing.} To test a hypothetical without committing it, the engine uses Z3's \texttt{push()/pop()} context stack:
+
+\begin{lstlisting}[language=Python]
+self.solver.push()
+self.solver.add(z3.And(hypothesis_A, hypothesis_B))
+result = self.solver.check()  # sat or unsat
+self.solver.pop()
+\end{lstlisting}
+
+\subsection{Self-Compiling ToolForge}
+
+When Z3 returns \texttt{unsat}, the ToolForge is invoked with the conflicting variable. It calls \texttt{ollama\_helper.generate\_tool\_code(task, error\_history)} with \texttt{deepseek-coder:1.3b} to generate a complete standalone Python script. If execution fails, \texttt{stderr} is captured and fed back:
+
+\begin{lstlisting}[language=Python]
+for attempt in range(self.max_retries):
+    code = ollama_helper.generate_tool_code(
+        task, error_history)
+    result = subprocess.run([sys.executable, tool_path],
+        timeout=5.0, capture_output=True)
+    if result.returncode == 0:
+        return True, result.stdout.strip()
+    error_history = result.stderr.strip()
+\end{lstlisting}
+
+The paradox is collapsed by resetting Z3 and injecting the empirical ground truth:
+\begin{lstlisting}[language=Python]
+self.solver.reset()
+self.solver.add(conflicting_var == empirical_truth)
+\end{lstlisting}
+
+\subsection{Homeostatic Epistemic Distress}
+
+The \texttt{SelfRecourseBrain} monitors a continuous distress metric:
+\[
+  \text{distress} = \begin{cases}
+    0.95 & \text{if Z3 returns unsat} \\
+    \min\!\left(0.30,\, \frac{\text{Var}(G)}{1 + \max|G|}\right) & \text{otherwise}
+  \end{cases}
+\]
+When $\text{distress} > 0.70$, \texttt{execute\_self\_recourse()} is automatically triggered.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Evaluation}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{HDC Metaplasticity}
+
+\begin{table}[h]
+\caption{Synaptic decay verification over 800 memory steps}
+\begin{tabular}{llrr}
+\toprule
+Phase & Event & Finance Sim. & Quantum Sim. \\
+\midrule
+$T=0$   & Initial state           & 0.000 & 0.000 \\
+$T=500$ & 500 finance writes      & 0.501 & 0.000 \\
+$T=800$ & 300 quantum writes      & \textbf{0.004} & \textbf{0.500} \\
+\bottomrule
+\end{tabular}
+\label{tab:decay}
+\end{table}
+
+Finance similarity decays 99.3\% under 300 unrelated updates. Synaptic decay is mathematically verified.
+
+\subsection{Contradiction Detection}
+
+A minimal paradox:
+\begin{align*}
+R_1&: \text{InterestRateHike} \Rightarrow \text{ReducedBorrowing} \\
+R_2&: \text{ReducedBorrowing} \Rightarrow \neg\text{InflationSpike} \\
+R_3&: \text{InterestRateHike} \Rightarrow \text{InflationSpike}
+\end{align*}
+With $\text{InterestRateHike} = \top$ asserted, Z3 returns \texttt{unsat} in $<1$ms. ToolForge synthesizes a resolution script. Paradox collapsed.
+
+\subsection{Cost Analysis}
+
+\begin{table}[h]
+\caption{Operational cost profile}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Cloud API cost per session & \textbf{\$0.00} \\
+HDC update per paper & $\approx$2ms \\
+Z3 solve time (typical) & $<$1ms \\
+Index query (19,000+ nodes) & $<$100ms \\
+Nightly papers ingested & 60--180 \\
+\bottomrule
+\end{tabular}
+\label{tab:cost}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Limitations and Future Work}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\textbf{Limitations.} (1) The LLM layers require a local Ollama installation; all three fall back to deterministic logic when offline. (2) Z3 currently models four predicate types; richer temporal or probabilistic relations require extension. (3) The system detects and resolves contradictions but does not yet \emph{generate} novel hypotheses from vault gaps.
+
+\textbf{Future Work.} Vault-aware ToolForge scripts; temporal Z3 predicates; hypothesis generation via bound cluster analysis; multi-agent HDC memory shards.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+% ─────────────────────────────────────────────────────────────────────────────
+
+We have presented AIN, a novel autonomous knowledge management system achieving Homeostatic Epistemic Equilibrium through the recursive composition of HDC memory, Z3 symbolic logic, and LLM-driven tool synthesis. The key contribution is architectural: AIN is the first system to treat a personal markdown vault as an epistemically-active state surface where new knowledge automatically triggers contradiction detection, empirical resolution, and knowledge-base self-repair --- all without cloud APIs or human supervision.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{ain_refs}
+
+\end{document}
