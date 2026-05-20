@@ -13,6 +13,12 @@ import argparse
 from datetime import datetime, timedelta
 import db_manager
 
+try:
+    from agi_core import neuro_symbolic, hdc_memory, tool_forge, flywheel
+    _AGI_ENABLED = True
+except ImportError:
+    _AGI_ENABLED = False
+
 # --- Active Intelligence modules (gracefully optional) ---
 try:
     import contradiction_engine
@@ -1048,6 +1054,50 @@ def cmd_disputes(args):
         print(f"  Dispute stubs in _Disputes/: {n_stubs}")
     print("=======================================================================")
 
+def cmd_agi_neuro(args):
+    if not _AGI_ENABLED:
+        print("[!] AGI Core not available. Install z3-solver and networkx.")
+        return
+    print("[AGI] Launching Neuro-Symbolic Test...")
+    engine = neuro_symbolic.NeuroSymbolicEngine()
+    engine.add_rule("Interest_Rate_Hike", "causes", "Reduced_Borrowing")
+    engine.add_rule("Reduced_Borrowing", "prevents", "Inflation_Spike")
+    print("[!] Asserting conflict: Interest_Rate_Hike causes Inflation_Spike")
+    engine.add_rule("Interest_Rate_Hike", "causes", "Inflation_Spike")
+    engine.solver.add(engine._get_var("Interest_Rate_Hike") == True)
+    is_consistent, msg = engine.check_consistency()
+    print(f"Universe Status: {msg}")
+
+def cmd_agi_hdc(args):
+    if not _AGI_ENABLED:
+        print("[!] AGI Core not available.")
+        return
+    print("[AGI] Running HDC Metaplasticity Memory Bundle...")
+    import time
+    hdc = hdc_memory.HDCMemory(dim=10000)
+    start = time.time()
+    for i in range(1000):
+        words = ["finance", "model"]
+        if i == 500: words.append("quantum_gravity")
+        hdc.update_memory(words)
+    print(f"[AGI] Integrated 1,000 nodes in {time.time()-start:.4f}s.")
+    print(f"Query 'quantum_gravity': {hdc.query_similarity('quantum_gravity'):.3f}")
+
+def cmd_agi_forge(args):
+    if not _AGI_ENABLED:
+        print("[!] AGI Core not available.")
+        return
+    task = args.task
+    name = args.name
+    forge = tool_forge.ToolForge()
+    forge.synthesize(task, name)
+
+def cmd_agi_flywheel(args):
+    if not _AGI_ENABLED:
+        print("[!] AGI Core not available.")
+        return
+    flywheel.run_recursive_flywheel()
+
 
 
 def main():
@@ -1101,6 +1151,15 @@ def main():
     # Disputes command
     subparsers.add_parser("disputes", help="Show unresolved contradiction pairs from vault")
 
+    # AGI core commands
+    subparsers.add_parser("agi_neuro", help="Test 0-token Neuro-Symbolic logic reconciliation (Z3)")
+    subparsers.add_parser("agi_hdc", help="Test HDC metaplasticity local memory updates")
+    subparsers.add_parser("agi_flywheel", help="Test recursive AGI loop (HDC -> Z3 -> Tool Forge)")
+    
+    parser_forge = subparsers.add_parser("agi_forge", help="Self-compile and integrate a new tool via Sandboxed Agent")
+    parser_forge.add_argument("name", type=str, help="Tool name")
+    parser_forge.add_argument("task", type=str, help="Tool task description")
+
     args = parser.parse_args()
 
     if args.command == "remember":
@@ -1125,6 +1184,14 @@ def main():
         cmd_snapshot(args)
     elif args.command == "disputes":
         cmd_disputes(args)
+    elif args.command == "agi_neuro":
+        cmd_agi_neuro(args)
+    elif args.command == "agi_hdc":
+        cmd_agi_hdc(args)
+    elif args.command == "agi_forge":
+        cmd_agi_forge(args)
+    elif args.command == "agi_flywheel":
+        cmd_agi_flywheel(args)
     else:
         parser.print_help()
 
