@@ -1,0 +1,121 @@
+{
+  "true_positives": 3,
+  "false_negatives": 2,
+  "true_negatives": 10,
+  "false_positives": 0,
+  "precision": 1.0,
+  "recall": 0.6,
+  "f1": 0.75,
+  "detail": [
+    {
+      "rule": "InterestRateHike \u2014causes\u2192 CreditExpansion",
+      "expected": "contradiction",
+      "detected": true,
+      "z3_state": "Paradox / Contradiction Detected (UNSAT)",
+      "status": "TP",
+      "latency_ms": 1.343
+    },
+    {
+      "rule": "HighSavingsRate \u2014causes\u2192 IncreasedConsumption",
+      "expected": "contradiction",
+      "detected": false,
+      "z3_state": "Consistent",
+      "status": "FN",
+      "latency_ms": 1.034
+    },
+    {
+      "rule": "Regularization \u2014causes\u2192 Overfitting",
+      "expected": "contradiction",
+      "detected": true,
+      "z3_state": "Paradox / Contradiction Detected (UNSAT)",
+      "status": "TP",
+      "latency_ms": 0.808
+    },
+    {
+      "rule": "Diversification \u2014causes\u2192 PortfolioRisk",
+      "expected": "contradiction",
+      "detected": false,
+      "z3_state": "Consistent",
+      "status": "FN",
+      "latency_ms": 1.008
+    },
+    {
+      "rule": "MonetaryExpansion \u2014mutually exclusive\u2192 MonetaryExpansion",
+      "expected": "contradiction",
+      "detected": true,
+      "z3_state": "Paradox / Contradiction Detected (UNSAT)",
+      "status": "TP",
+      "latency_ms": 0.431
+    },
+    {
+      "rule": "InterestRateHike \u2014causes\u2192 ReducedBorrowing",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "ReducedBorrowing \u2014prevents\u2192 CreditExpansion",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "HighSavingsRate \u2014implies\u2192 ReducedConsumption",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "ReducedConsumption \u2014causes\u2192 LowerGDPGrowth",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "TrainingData \u2014requires\u2192 ModelAccuracy",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "ModelAccuracy \u2014causes\u2192 LowerLoss",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "HighEntropy \u2014causes\u2192 InformationGain",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "Regularization \u2014prevents\u2192 Overfitting",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "Diversification \u2014reduces\u2192 PortfolioRisk",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    },
+    {
+      "rule": "LiquidityTrap \u2014prevents\u2192 MonetaryPolicyEffect",
+      "expected": "consistent",
+      "detected_contradiction": false,
+      "z3_state": "Consistent",
+      "status": "TN"
+    }
+  ]
+}

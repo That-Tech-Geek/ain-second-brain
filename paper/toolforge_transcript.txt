@@ -1,0 +1,60 @@
+======================================================================
+TOOLFORGE SELF-COMPILING DEBUG SESSION TRANSCRIPT
+Task: Calculate the 15th Fibonacci number (1-indexed, F(1)=1). Print True if the result equals 610, else print False.
+======================================================================
+
+[Environment] Ollama available: False
+[Environment] Code model: deepseek-coder:1.3b
+[Environment] Max tokens: 400, Temperature: 0.2
+
+──────────────────────────────────────────────────────────────────────
+ATTEMPT 1 / 3
+──────────────────────────────────────────────────────────────────────
+[LLM] Offline — using scripted broken stub (missing colon on def line)
+
+[Generated Code — 0ms generation time]
+```python
+  def fibonacci(n)
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  
+  result = fibonacci(15)
+  print(result == 610)
+```
+
+[Execution — 214.1ms]
+  Return code: 1
+  stderr (captured for feedback loop):
+    File "C:\Users\91891\.gemini\antigravity\scratch\ain-second-brain\paper\..\agi_core\synthesized_tools\fib_15_check.py", line 1
+        def fibonacci(n)
+                        ^
+    SyntaxError: expected ':'
+
+──────────────────────────────────────────────────────────────────────
+ATTEMPT 2 / 3  (error feedback injected into prompt)
+──────────────────────────────────────────────────────────────────────
+[Feedback] Injecting stderr into next generation prompt...
+[LLM] Offline — using scripted corrected stub (colon added)
+
+[Generated Code — 0ms generation time]
+```python
+  def fibonacci(n):
+      if n <= 1:
+          return n
+      return fibonacci(n-1) + fibonacci(n-2)
+  
+  result = fibonacci(15)
+  print(result == 610)
+```
+
+[Execution — 172.8ms]
+  Return code: 0
+  stdout: True
+
+[✅ ToolForge SUCCESS on attempt 2]
+[Result] Output: 'True' → Paradox resolution: True
+
+======================================================================
+END OF TRANSCRIPT
+======================================================================

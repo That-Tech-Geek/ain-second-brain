@@ -1,0 +1,323 @@
+{
+  "0.9": [
+    {
+      "decay_step": 0,
+      "finance_sim": 0.4992,
+      "quantum_sim": 0.0
+    },
+    {
+      "decay_step": 25,
+      "finance_sim": 0.1172,
+      "quantum_sim": 0.49
+    },
+    {
+      "decay_step": 50,
+      "finance_sim": 0.0054,
+      "quantum_sim": 0.4958
+    },
+    {
+      "decay_step": 75,
+      "finance_sim": 0.0092,
+      "quantum_sim": 0.4892
+    },
+    {
+      "decay_step": 100,
+      "finance_sim": -0.0032,
+      "quantum_sim": 0.4948
+    },
+    {
+      "decay_step": 125,
+      "finance_sim": -0.0048,
+      "quantum_sim": 0.4848
+    },
+    {
+      "decay_step": 150,
+      "finance_sim": -0.003,
+      "quantum_sim": 0.4994
+    },
+    {
+      "decay_step": 175,
+      "finance_sim": -0.0004,
+      "quantum_sim": 0.4876
+    },
+    {
+      "decay_step": 200,
+      "finance_sim": -0.0148,
+      "quantum_sim": 0.4856
+    },
+    {
+      "decay_step": 225,
+      "finance_sim": -0.0028,
+      "quantum_sim": 0.494
+    },
+    {
+      "decay_step": 250,
+      "finance_sim": 0.0066,
+      "quantum_sim": 0.4974
+    },
+    {
+      "decay_step": 275,
+      "finance_sim": -0.0056,
+      "quantum_sim": 0.4972
+    },
+    {
+      "decay_step": 300,
+      "finance_sim": -0.0036,
+      "quantum_sim": 0.4924
+    },
+    {
+      "decay_step": 325,
+      "finance_sim": 0.0032,
+      "quantum_sim": 0.4912
+    },
+    {
+      "decay_step": 350,
+      "finance_sim": 0.0058,
+      "quantum_sim": 0.4982
+    },
+    {
+      "decay_step": 375,
+      "finance_sim": -0.0098,
+      "quantum_sim": 0.493
+    },
+    {
+      "decay_step": 400,
+      "finance_sim": 0.0026,
+      "quantum_sim": 0.493
+    },
+    {
+      "decay_step": 425,
+      "finance_sim": 0.0136,
+      "quantum_sim": 0.4996
+    },
+    {
+      "decay_step": 450,
+      "finance_sim": 0.002,
+      "quantum_sim": 0.502
+    },
+    {
+      "decay_step": 475,
+      "finance_sim": 0.0034,
+      "quantum_sim": 0.4926
+    },
+    {
+      "decay_step": 500,
+      "finance_sim": 0.0022,
+      "quantum_sim": 0.5022
+    }
+  ],
+  "0.95": [
+    {
+      "decay_step": 0,
+      "finance_sim": 0.487,
+      "quantum_sim": 0.0
+    },
+    {
+      "decay_step": 25,
+      "finance_sim": 0.2576,
+      "quantum_sim": 0.4908
+    },
+    {
+      "decay_step": 50,
+      "finance_sim": 0.1796,
+      "quantum_sim": 0.5036
+    },
+    {
+      "decay_step": 75,
+      "finance_sim": 0.0742,
+      "quantum_sim": 0.4922
+    },
+    {
+      "decay_step": 100,
+      "finance_sim": 0.0334,
+      "quantum_sim": 0.4958
+    },
+    {
+      "decay_step": 125,
+      "finance_sim": 0.003,
+      "quantum_sim": 0.4974
+    },
+    {
+      "decay_step": 150,
+      "finance_sim": 0.0016,
+      "quantum_sim": 0.4976
+    },
+    {
+      "decay_step": 175,
+      "finance_sim": 0.0154,
+      "quantum_sim": 0.4918
+    },
+    {
+      "decay_step": 200,
+      "finance_sim": 0.0076,
+      "quantum_sim": 0.498
+    },
+    {
+      "decay_step": 225,
+      "finance_sim": 0.0156,
+      "quantum_sim": 0.4944
+    },
+    {
+      "decay_step": 250,
+      "finance_sim": 0.0128,
+      "quantum_sim": 0.504
+    },
+    {
+      "decay_step": 275,
+      "finance_sim": 0.0132,
+      "quantum_sim": 0.5056
+    },
+    {
+      "decay_step": 300,
+      "finance_sim": 0.0186,
+      "quantum_sim": 0.4954
+    },
+    {
+      "decay_step": 325,
+      "finance_sim": 0.0144,
+      "quantum_sim": 0.5016
+    },
+    {
+      "decay_step": 350,
+      "finance_sim": 0.0204,
+      "quantum_sim": 0.4856
+    },
+    {
+      "decay_step": 375,
+      "finance_sim": 0.0032,
+      "quantum_sim": 0.4968
+    },
+    {
+      "decay_step": 400,
+      "finance_sim": 0.0128,
+      "quantum_sim": 0.4948
+    },
+    {
+      "decay_step": 425,
+      "finance_sim": 0.0164,
+      "quantum_sim": 0.4992
+    },
+    {
+      "decay_step": 450,
+      "finance_sim": 0.0078,
+      "quantum_sim": 0.4922
+    },
+    {
+      "decay_step": 475,
+      "finance_sim": 0.0104,
+      "quantum_sim": 0.4928
+    },
+    {
+      "decay_step": 500,
+      "finance_sim": 0.0092,
+      "quantum_sim": 0.5068
+    }
+  ],
+  "0.99": [
+    {
+      "decay_step": 0,
+      "finance_sim": 0.4942,
+      "quantum_sim": 0.0
+    },
+    {
+      "decay_step": 25,
+      "finance_sim": 0.4958,
+      "quantum_sim": 0.2472
+    },
+    {
+      "decay_step": 50,
+      "finance_sim": 0.4978,
+      "quantum_sim": 0.2484
+    },
+    {
+      "decay_step": 75,
+      "finance_sim": 0.257,
+      "quantum_sim": 0.482
+    },
+    {
+      "decay_step": 100,
+      "finance_sim": 0.252,
+      "quantum_sim": 0.487
+    },
+    {
+      "decay_step": 125,
+      "finance_sim": 0.255,
+      "quantum_sim": 0.4856
+    },
+    {
+      "decay_step": 150,
+      "finance_sim": 0.254,
+      "quantum_sim": 0.491
+    },
+    {
+      "decay_step": 175,
+      "finance_sim": 0.2574,
+      "quantum_sim": 0.4884
+    },
+    {
+      "decay_step": 200,
+      "finance_sim": 0.2542,
+      "quantum_sim": 0.4832
+    },
+    {
+      "decay_step": 225,
+      "finance_sim": 0.2512,
+      "quantum_sim": 0.4842
+    },
+    {
+      "decay_step": 250,
+      "finance_sim": 0.2482,
+      "quantum_sim": 0.4884
+    },
+    {
+      "decay_step": 275,
+      "finance_sim": 0.2304,
+      "quantum_sim": 0.4882
+    },
+    {
+      "decay_step": 300,
+      "finance_sim": 0.2078,
+      "quantum_sim": 0.4908
+    },
+    {
+      "decay_step": 325,
+      "finance_sim": 0.173,
+      "quantum_sim": 0.488
+    },
+    {
+      "decay_step": 350,
+      "finance_sim": 0.1518,
+      "quantum_sim": 0.5008
+    },
+    {
+      "decay_step": 375,
+      "finance_sim": 0.1162,
+      "quantum_sim": 0.4936
+    },
+    {
+      "decay_step": 400,
+      "finance_sim": 0.0958,
+      "quantum_sim": 0.4948
+    },
+    {
+      "decay_step": 425,
+      "finance_sim": 0.0728,
+      "quantum_sim": 0.485
+    },
+    {
+      "decay_step": 450,
+      "finance_sim": 0.0602,
+      "quantum_sim": 0.49
+    },
+    {
+      "decay_step": 475,
+      "finance_sim": 0.044,
+      "quantum_sim": 0.4746
+    },
+    {
+      "decay_step": 500,
+      "finance_sim": 0.0458,
+      "quantum_sim": 0.486
+    }
+  ]
+}

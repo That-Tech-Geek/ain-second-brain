@@ -1,0 +1,16 @@
+rule,expected,status,latency_ms
+InterestRateHike —causes→ CreditExpansion,contradiction,TP,1.343
+HighSavingsRate —causes→ IncreasedConsumption,contradiction,FN,1.034
+Regularization —causes→ Overfitting,contradiction,TP,0.808
+Diversification —causes→ PortfolioRisk,contradiction,FN,1.008
+MonetaryExpansion —mutually exclusive→ MonetaryExpansion,contradiction,TP,0.431
+InterestRateHike —causes→ ReducedBorrowing,consistent,TN,N/A
+ReducedBorrowing —prevents→ CreditExpansion,consistent,TN,N/A
+HighSavingsRate —implies→ ReducedConsumption,consistent,TN,N/A
+ReducedConsumption —causes→ LowerGDPGrowth,consistent,TN,N/A
+TrainingData —requires→ ModelAccuracy,consistent,TN,N/A
+ModelAccuracy —causes→ LowerLoss,consistent,TN,N/A
+HighEntropy —causes→ InformationGain,consistent,TN,N/A
+Regularization —prevents→ Overfitting,consistent,TN,N/A
+Diversification —reduces→ PortfolioRisk,consistent,TN,N/A
+LiquidityTrap —prevents→ MonetaryPolicyEffect,consistent,TN,N/A
